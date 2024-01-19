@@ -1,34 +1,42 @@
-/*!
- * Start Bootstrap - Blog Post v5.0.9 (https://startbootstrap.com/template/blog-post)
- * Copyright 2013-2023 Start Bootstrap
- * Licensed under MIT (https://github.com/StartBootstrap/startbootstrap-blog-post/blob/master/LICENSE)
- */
-// This file is intentionally blank
-// Use this file to add JavaScript to your project
-
-function handleNavLinkClick(clickedElement) {
-    // Remove "active" class from all nav links
-    const navLinks = document.querySelectorAll('.nav-link');
-    navLinks.forEach(link => link.classList.remove('active'));
-
-    // Add "active" class to the clicked nav link
-    clickedElement.classList.add('active');
-}
-
 const searchInput = document.getElementById("searchInput");
-const body = document.body;
+const contentAll = document.getElementById("content-all");
 
 searchInput.addEventListener("input", function () {
-  const searchTerm = searchInput.value;
+  const searchTerm = searchInput.value.trim().toLowerCase();
+  const textElements = contentAll.querySelectorAll("h1, h2, p, li"); 
 
-  // Display the search term
-  //   body.textContent = `You are searching for: ${searchTerm}`;
+  textElements.forEach((element) => {
+    const originalText = element.textContent;
+    let updatedText = originalText; 
 
-  // Apply highlight effect to the input field
-  if (searchTerm.trim() !== "") {
-    searchInput.classList.add("highlight");
-  } else {
-    searchInput.classList.remove("highlight");
+    if (searchTerm !== "") {
+      const words = originalText.split(/\b/);
+
+      const highlightedText = words
+        .map((word) => {
+          const lowerCaseWord = word.toLowerCase();
+          return lowerCaseWord.includes(searchTerm)
+            ? `<span class="highlight">${word}</span>`
+            : word;
+        })
+        .join("");
+
+      updatedText = highlightedText;
+    }
+
+    element.querySelectorAll(".highlight").forEach((span) => {
+      span.outerHTML = span.innerHTML;
+    });
+
+    element.innerHTML = updatedText;
+  });
+});
+
+searchInput.addEventListener("change", function () {
+  if (searchInput.value.trim() === "") {
+    contentAll.querySelectorAll(".highlight").forEach((span) => {
+      span.outerHTML = span.innerHTML;
+    });
   }
 });
 
@@ -57,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
               />
             </div>
             <div class="ms-3" style="margin-right: auto;">
-              <div class="fw-bold">New Commenter</div>
+              <div class="fw-bold">Anonymous</div>
               <p class="comment-text">${newComment}</p>
             </div>
             <button class="btn btn-danger delete-btn">Delete</button>
@@ -105,7 +113,7 @@ document.addEventListener("DOMContentLoaded", function () {
                 />
               </div>
               <div class="ms-3" style="margin-right: auto;">
-                <div class="fw-bold">New Commenter</div>
+                <div class="fw-bold">Anonymous</div>
                 <p class="comment-text">${comment}</p>
               </div>
               <button class="btn btn-danger delete-btn">Delete</button>
